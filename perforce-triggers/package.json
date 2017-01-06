@@ -1,0 +1,13 @@
+{
+  "name": "perforce-triggers",
+  "version": "1.0.0",
+  "description": "Perforce Triggers ",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Arnaud Kervern <ak@nuxeo.com>",
+  "license": "MIT",
+  "dependencies": {
+    "nuxeo": "^2.2.1"
+  }
+}
