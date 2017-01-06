@@ -1,0 +1,10 @@
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Vendor: com.nuxeo.perforce
+Bundle-Version: 1.0.0
+Bundle-Name: nuxeo-perforce-core
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: com.nuxeo.perforce.nuxeo-perforce-core;singleton=true
+Nuxeo-Component: OSGI-INF/operation-contrib.xml,
+ OSGI-INF/service-contrib.xml, OSGI-INF/blobprovider-contrib.xml

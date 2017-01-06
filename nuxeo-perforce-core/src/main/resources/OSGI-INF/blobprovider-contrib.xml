@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<component name="com.nuxeo.perforce.blobprovider" version="1.0">
+  <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+    <blobprovider name="perforce">
+      <class>com.nuxeo.perforce.blob.PerforceBlobProvider</class>
+    </blobprovider>
+  </extension>
+</component>

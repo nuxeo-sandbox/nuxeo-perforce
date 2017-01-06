@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<component name="com.nuxeo.perforce.operation.v-c-s-events-receiver-operation" version="1.0">
+
+  <extension point="operations" target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+    <operation class="com.nuxeo.perforce.VCSEventsReceiverOperation"/>
+  </extension>
+
+</component>

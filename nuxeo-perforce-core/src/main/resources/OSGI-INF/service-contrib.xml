@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<component name="com.nuxeo.perforce.VCSEventsService" version="1.0">
+  <implementation class="com.nuxeo.perforce.VCSEventsServiceImpl"/>
+
+  <service>
+    <provide interface="com.nuxeo.perforce.VCSEventsService"/>
+  </service>
+</component>
