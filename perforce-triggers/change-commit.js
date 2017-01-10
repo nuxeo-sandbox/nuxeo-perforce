@@ -5,6 +5,7 @@
 const _ = require('lodash');
 const Nuxeo = require('nuxeo');
 const s = require('synchronize');
+const os = require('os');
 const exec = require('child_process').execSync;
 
 const P4CLIENT = process.env.P4CLIENT || '/Users/arnaud/Nuxeo/tmp/perforce/p4';
@@ -80,7 +81,9 @@ s.fiber(() => {
   _(files).each((params) => {
     sync((cb) => {
       nuxeo.operation(OPERATION)
-        .params(params)
+        .params(_.extend(params, {
+          provider: 'perforce'
+        }))
         .execute({
           headers: {
             'X-NXVoidOperation': true

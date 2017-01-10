@@ -22,11 +22,18 @@
 package com.nuxeo.perforce;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.mimetype.MimetypeNotFoundException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
 
 public class VCSEventsPerforce implements VCSEventsProvider {
+
+    private static final Log log = LogFactory.getLog(VCSEventsPerforce.class);
 
     public static final String NAME = "perforce";
 
@@ -45,13 +52,24 @@ public class VCSEventsPerforce implements VCSEventsProvider {
         case "add":
             return EVENT_ACTION.CREATE;
         }
-        return null;
+
+        throw new UnsupportedOperationException("Unknown action: " + action);
+    }
+
+    @Override
+    public Map<String, Map<String, Object>> extractMetadata(String filePath) {
+        return Collections.EMPTY_MAP;
     }
 
     @Override
     public boolean handleFilename(String filename) {
-        String mimeType = Framework.getService(MimetypeRegistry.class).getMimetypeFromFilename(filename);
-        return mimeType != null && anyStartsWith(mimeType, "audio", "video", "image");
+        try {
+            String mimeType = Framework.getService(MimetypeRegistry.class).getMimetypeFromFilename(filename);
+            return mimeType != null && anyStartsWith(mimeType, "audio", "video", "image");
+        } catch (MimetypeNotFoundException e) {
+            log.debug("Unable to find Mimetype for filename: " + filename);
+            return false;
+        }
     }
 
     private static boolean anyStartsWith(String mimeType, String... medias) {

@@ -28,7 +28,7 @@ public interface VCSEventsService {
 
     String getRootPath();
 
-    DocumentModel createDocumentModel(CoreSession session, String filename, String type);
+    DocumentModel createDocumentModel(CoreSession session, String filename, String type, String remoteKey);
 
     DocumentModel searchDocumentModel(CoreSession session, String key);
 }

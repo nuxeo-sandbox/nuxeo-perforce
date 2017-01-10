@@ -21,6 +21,7 @@
 package com.nuxeo.perforce;
 
 import java.util.MissingFormatArgumentException;
+import java.util.Random;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -61,7 +62,7 @@ public class VCSEventsReceiverOperation {
 
     @OperationMethod
     public DocumentModel run() {
-        VCSEventsService service = Framework.getService(VCSEventsService.class);
+        VCSEventsService service = getService();
         VCSEventsProvider provider = service.getEventsProvider(this.provider);
 
         if (provider == null) {
@@ -78,8 +79,7 @@ public class VCSEventsReceiverOperation {
 
         switch (provider.getAction(this.action)) {
         case CREATE:
-            doc = service.createDocumentModel(session, filename, provider.getDocumentType());
-            doc = session.createDocument(doc);
+            doc = createDocumentModel(filename, provider);
             // XXX Attach blob to the new Document
             break;
         case DELETE:
@@ -93,10 +93,11 @@ public class VCSEventsReceiverOperation {
         case UPDATE:
             doc = service.searchDocumentModel(session, documentKey);
             if (doc == null) {
-                doc = service.createDocumentModel(session, filename, provider.getDocumentType());
-                doc = session.createDocument(doc);
+                doc = createDocumentModel(filename, provider);
             }
+            doc.setPropertyValue("dc:title", String.valueOf(new Random().nextDouble()));
             // XXX Attach blob to the new Document
+            session.saveDocument(doc);
             break;
         case MOVE:
             // XXX Considering move like a DELETE + CREATE for now.
@@ -107,5 +108,16 @@ public class VCSEventsReceiverOperation {
         }
 
         return doc;
+    }
+
+    private static VCSEventsService getService() {
+        return Framework.getService(VCSEventsService.class);
+    }
+
+    private DocumentModel createDocumentModel(String filename, VCSEventsProvider provider) {
+        DocumentModel doc = getService().createDocumentModel(session, filename, provider.getDocumentType(),
+                provider.computeKey(filePath, change));
+        provider.extractMetadata(filePath).entrySet().forEach(e -> doc.setProperties(e.getKey(), e.getValue()));
+        return session.createDocument(doc);
     }
 }

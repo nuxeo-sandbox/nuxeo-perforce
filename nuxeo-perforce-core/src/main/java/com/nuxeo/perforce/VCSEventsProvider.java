@@ -20,6 +20,8 @@
  */
 package com.nuxeo.perforce;
 
+import java.util.Map;
+
 /**
  * VCS Events Provider provide needed stuff for handling the event.
  */
@@ -42,6 +44,14 @@ public interface VCSEventsProvider {
     boolean handleFilename(String filename);
 
     /**
+     * Extract metadata from the remote Path
+     * 
+     * @param filePath remote path of the file
+     * @return
+     */
+    Map<String, Map<String, Object>> extractMetadata(String filePath);
+
+    /**
      * Compute a unique key to identify a Document stored in the repository that is corresponding to. A good approach
      * can be to use the provider name inside.
      * 
@@ -50,7 +60,7 @@ public interface VCSEventsProvider {
      * @return a unique key to identify the document
      */
     default String computeKey(String remotePath, String change) {
-        return String.format("%s#%s#%s", getName(), remotePath, change);
+        return String.format("%s#%s", getName(), remotePath);
     }
 
     /**

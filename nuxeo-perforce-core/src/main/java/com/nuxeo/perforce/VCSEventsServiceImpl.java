@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -35,8 +34,15 @@ public class VCSEventsServiceImpl extends DefaultComponent implements VCSEventsS
 
     Map<String, VCSEventsProvider> providers = new HashMap<>();
 
+    private static final String KEY_PROP = "dc:source";
+
+    private static final String QUERY = "Select * from Document where " + KEY_PROP
+            + " = '%s' AND ecm:isProxy = 0 AND ecm:isCheckedInVersion = 0";
+
     @Override
-    public void applicationStarted(ComponentContext context) {
+    public void activate(ComponentContext context) {
+        super.activate(context);
+
         register(new VCSEventsPerforce());
     }
 
@@ -51,13 +57,15 @@ public class VCSEventsServiceImpl extends DefaultComponent implements VCSEventsS
     }
 
     @Override
-    public DocumentModel createDocumentModel(CoreSession session, String filename, String type) {
-        return session.createDocumentModel(Framework.getService(VCSEventsService.class).getRootPath(), filename, type);
+    public DocumentModel createDocumentModel(CoreSession session, String filename, String type, String remoteKey) {
+        DocumentModel doc = session.createDocumentModel(getRootPath(), filename, type);
+        doc.setPropertyValue(KEY_PROP, remoteKey);
+        return doc;
     }
 
     @Override
     public DocumentModel searchDocumentModel(CoreSession session, String key) {
-        DocumentModelList res = session.query("Select * from Document ");
+        DocumentModelList res = session.query(String.format(QUERY, key));
         if (res.size() > 1) {
             throw new NuxeoException("Find several stored document with key: " + key + " can't find the correct one.");
         }

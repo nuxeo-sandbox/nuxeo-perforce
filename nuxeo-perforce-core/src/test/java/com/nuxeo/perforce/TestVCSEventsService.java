@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -21,6 +22,9 @@ import com.nuxeo.perforce.VCSEventsProvider.EVENT_ACTION;
 @Features({ PlatformFeature.class })
 @Deploy({ "com.nuxeo.perforce.nuxeo-perforce-core", "org.nuxeo.ecm.core.mimetype" })
 public class TestVCSEventsService {
+
+    @Inject
+    protected CoreSession session;
 
     @Inject
     protected VCSEventsService vCSEventsService;
@@ -48,6 +52,8 @@ public class TestVCSEventsService {
         assertFalse(perforce.handleFilename("/something/more/long/toto.pdf"));
         assertFalse(perforce.handleFilename("/something/more/long/toto.zip"));
 
+        assertFalse(perforce.handleFilename("/something/more/long/toto"));
+
         assertTrue(perforce.handleFilename("/something/more/long/toto.jpg"));
         assertTrue(perforce.handleFilename("/something/more/long/toto.mp4"));
         assertTrue(perforce.handleFilename("/something/more/long/toto.mp3"));
@@ -59,6 +65,5 @@ public class TestVCSEventsService {
         assertEquals(EVENT_ACTION.CREATE, perforce.getAction("add"));
         assertEquals(EVENT_ACTION.UPDATE, perforce.getAction("edit"));
         assertEquals(EVENT_ACTION.DELETE, perforce.getAction("delete"));
-        assertNull(perforce.getAction("move"));
     }
 }
