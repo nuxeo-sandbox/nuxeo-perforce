@@ -8,6 +8,8 @@
   "author": "Arnaud Kervern <ak@nuxeo.com>",
   "license": "MIT",
   "dependencies": {
-    "nuxeo": "^2.2.1"
+    "lodash": "^4.17.4",
+    "nuxeo": "^2.2.1",
+    "synchronize": "^2.0.0"
   }
 }
