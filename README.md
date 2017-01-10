@@ -3,6 +3,22 @@ Browse and Sync Perforce assets from a remote depot
 
 ## Perforce Triggers
 
+### Prepare triggers
+
+To prepare them; you need to install NPM dependencies:
+```
+npm install
+```
+
+Then, you must also set some env variables / or edit script:
+```
+export P4CLIENT="/Users/arnaud/Nuxeo/tmp/perforce/p4";
+export NUXEO_HOST="http://localhost:8080/nuxeo";
+export NUXEO_USER="Administrator";
+export NUXEO_PWD="Administrator";
+```
+
+### Add triggers to Perforce
 To install them, add the folllowing trigger line using `p4 triggers`:
 ```
 nuxeo change-submit //... "/<PATH>/change-commit.js %changelist% %serverport%"
