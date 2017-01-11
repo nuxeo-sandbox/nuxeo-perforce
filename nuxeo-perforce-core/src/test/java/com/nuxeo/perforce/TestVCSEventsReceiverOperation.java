@@ -115,7 +115,7 @@ public class TestVCSEventsReceiverOperation {
         assertTrue(ret instanceof DocumentModel);
 
         ret = runOperation(filePath, "delete", "");
-        assertTrue(ret instanceof DocumentModel);
+        assertNull(ret);
 
         ret = runOperation("//unknown/file.avi", "delete", "");
         assertNull(ret);

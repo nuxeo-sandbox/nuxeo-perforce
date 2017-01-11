@@ -1,13 +1,24 @@
 # nuxeo-perforce
 Browse and Sync Perforce assets from a remote depot
 
-## Perforce Triggers
+## Build & Install Java Plugin
+
+```
+mvn install
+$NUXEO/bin/nuxeoctl mp-install nuxeo-perforce-package/target/nuxeo-perforce-package-1.0-SNAPSHOT.zip
+```
+
+## Prepare Perforce env
+
+Download a Helix server: https://www.perforce.com/downloads/helix#server
+
+## Install Perforce Triggers
 
 ### Prepare triggers
 
 To prepare them; you need to install NPM dependencies:
 ```
-npm install
+cd perforce-triggers && npm install
 ```
 
 Then, you must also set some env variables / or edit script:
@@ -19,7 +30,7 @@ export NUXEO_PWD="Administrator";
 ```
 
 ### Add triggers to Perforce
-To install them, add the folllowing trigger line using `p4 triggers`:
+To install them, use the p4 client, and add the folllowing trigger line using `p4 triggers`:
 ```
 nuxeo change-commit //... "//<PATH>/change-commit.js %changelist% %serverport%"
 ```
