@@ -21,7 +21,7 @@ export NUXEO_PWD="Administrator";
 ### Add triggers to Perforce
 To install them, add the folllowing trigger line using `p4 triggers`:
 ```
-nuxeo change-submit //... "/<PATH>/change-commit.js %changelist% %serverport%"
+nuxeo change-commit //... "//<PATH>/change-commit.js %changelist% %serverport%"
 ```
 
 # About Nuxeo

@@ -21,16 +21,22 @@
 package com.nuxeo.perforce;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 public class VCSEventsServiceImpl extends DefaultComponent implements VCSEventsService {
+
+    private static final Log log = LogFactory.getLog(VCSEventsServiceImpl.class);
 
     Map<String, VCSEventsProvider> providers = new HashMap<>();
 
@@ -66,12 +72,14 @@ public class VCSEventsServiceImpl extends DefaultComponent implements VCSEventsS
     @Override
     public DocumentModel searchDocumentModel(CoreSession session, String key) {
         DocumentModelList res = session.query(String.format(QUERY, key));
-        if (res.size() > 1) {
-            throw new NuxeoException("Find several stored document with key: " + key + " can't find the correct one.");
-        }
-
         if (res.size() == 0) {
             return null;
+        }
+
+        if (res.size() > 1) {
+            // XXX Should not happen
+            List<String> paths = res.stream().map(s -> s.getPathAsString()).collect(Collectors.toList());
+            log.warn(String.format("Found several Document for %s:\n", key, StringUtils.join(paths)));
         }
 
         return res.get(0);

@@ -22,6 +22,9 @@ package com.nuxeo.perforce;
 
 import java.util.Map;
 
+import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
+import org.nuxeo.ecm.core.blob.BlobProvider;
+
 /**
  * VCS Events Provider provide needed stuff for handling the event.
  */
@@ -71,6 +74,17 @@ public interface VCSEventsProvider {
     default String getDocumentType() {
         return "File";
     }
+
+    /**
+     * Build a BlobInfo that will be used to instanciate a new {@link org.nuxeo.ecm.core.blob.ManagedBlob}. So, the key
+     * must be in format `providerID:key`
+     */
+    BlobInfo buildBlobInfo(String remotePath, String filename, String change);
+
+    /**
+     * Return expected blob Provider
+     */
+    BlobProvider getBlobProvider();
 
     enum EVENT_ACTION {
         CREATE, UPDATE, DELETE, MOVE

@@ -64,12 +64,12 @@ public class TestVCSEventsReceiverOperation {
 
     @Test
     public void createDocument() throws OperationException {
-        Object ret = runOperation("//Nuxeo/main/something/test/blabla.mp4", "add", null);
+        Object ret = runOperation("//Nuxeo/main/something/createFile/blabla.mp4", "add", null);
         assertTrue(ret instanceof DocumentModel);
         DocumentModel doc = (DocumentModel) ret;
         assertNotNull(doc.getPropertyValue("dc:source"));
 
-        ret = runOperation("//blasd/test.txt", "add", null);
+        ret = runOperation("//blasd/createFile.txt", "add", null);
         assertNull(ret);
     }
 
@@ -110,7 +110,7 @@ public class TestVCSEventsReceiverOperation {
 
     @Test
     public void deleteDocument() throws OperationException {
-        String filePath = "//depot/test.mp4";
+        String filePath = "//depot/createFile.mp4";
         Object ret = runOperation(filePath, "add", "10");
         assertTrue(ret instanceof DocumentModel);
 

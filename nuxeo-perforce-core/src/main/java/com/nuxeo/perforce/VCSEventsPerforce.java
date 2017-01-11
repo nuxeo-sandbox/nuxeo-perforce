@@ -27,9 +27,14 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
+import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.platform.mimetype.MimetypeNotFoundException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
+
+import com.nuxeo.perforce.blob.PerforceBlobProvider;
 
 public class VCSEventsPerforce implements VCSEventsProvider {
 
@@ -57,18 +62,36 @@ public class VCSEventsPerforce implements VCSEventsProvider {
     }
 
     @Override
+    public BlobInfo buildBlobInfo(String remotePath, String filename, String change) {
+        BlobInfo blobInfo = new BlobInfo();
+        blobInfo.key = PerforceBlobProvider.ID + ":" + remotePath + ":" + change;
+        blobInfo.filename = filename;
+        blobInfo.mimeType = getMimeTypeFromFilename(filename);
+        return blobInfo;
+    }
+
+    @Override
+    public BlobProvider getBlobProvider() {
+        return Framework.getService(BlobManager.class).getBlobProvider(PerforceBlobProvider.ID);
+    }
+
+    @Override
     public Map<String, Map<String, Object>> extractMetadata(String filePath) {
         return Collections.EMPTY_MAP;
     }
 
     @Override
     public boolean handleFilename(String filename) {
+        String mimeType = getMimeTypeFromFilename(filename);
+        return mimeType != null && anyStartsWith(mimeType, "audio", "video", "image");
+    }
+
+    private String getMimeTypeFromFilename(String filename) {
         try {
-            String mimeType = Framework.getService(MimetypeRegistry.class).getMimetypeFromFilename(filename);
-            return mimeType != null && anyStartsWith(mimeType, "audio", "video", "image");
+            return Framework.getService(MimetypeRegistry.class).getMimetypeFromFilename(filename);
         } catch (MimetypeNotFoundException e) {
-            log.debug("Unable to find Mimetype for filename: " + filename);
-            return false;
+            log.debug("Unable to find MimeType for filename: " + filename);
+            return null;
         }
     }
 

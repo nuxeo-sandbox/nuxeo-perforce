@@ -8,7 +8,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -24,9 +23,6 @@ import com.nuxeo.perforce.VCSEventsProvider.EVENT_ACTION;
 public class TestVCSEventsService {
 
     @Inject
-    protected CoreSession session;
-
-    @Inject
     protected VCSEventsService vCSEventsService;
 
     @Inject
@@ -36,7 +32,7 @@ public class TestVCSEventsService {
     public void testService() {
         assertNotNull(vCSEventsService);
         assertNotNull(registryService);
-        assertNotNull(registryService.getExtensionsFromMimetypeName("test.txt"));
+        assertNotNull(registryService.getExtensionsFromMimetypeName("createFile.txt"));
     }
 
     @Test

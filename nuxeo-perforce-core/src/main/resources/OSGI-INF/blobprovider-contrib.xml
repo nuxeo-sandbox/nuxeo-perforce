@@ -3,6 +3,9 @@
   <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
     <blobprovider name="perforce">
       <class>com.nuxeo.perforce.blob.PerforceBlobProvider</class>
+      <!--
+      <property name="P4HOST">localhost:1666</property>
+      -->
     </blobprovider>
   </extension>
 </component>
