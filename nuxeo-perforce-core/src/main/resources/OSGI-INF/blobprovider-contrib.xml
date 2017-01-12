@@ -4,7 +4,8 @@
     <blobprovider name="perforce">
       <class>com.nuxeo.perforce.blob.PerforceBlobProvider</class>
       <!--
-      <property name="P4HOST">localhost:1666</property>
+      <property name="host">localhost:1666</property>
+      <property name="protocol">p4java</property>
       -->
     </blobprovider>
   </extension>

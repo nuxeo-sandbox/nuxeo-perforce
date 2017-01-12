@@ -21,13 +21,16 @@
 
 package com.nuxeo.perforce.blob;
 
+import static com.perforce.p4java.PropertyDefs.P4JAVA_PROP_KEY_PREFIX;
 import static com.perforce.p4java.core.file.FileSpecBuilder.makeFileSpecList;
+import static com.perforce.p4java.server.IServerAddress.Protocol.P4JAVA;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
@@ -51,12 +54,15 @@ import com.perforce.p4java.exception.RequestException;
 import com.perforce.p4java.exception.ResourceException;
 import com.perforce.p4java.option.server.GetFileContentsOptions;
 import com.perforce.p4java.server.IServer;
+import com.perforce.p4java.server.IServerAddress.Protocol;
 import com.perforce.p4java.server.ServerFactory;
 
 public class PerforceBlobProvider extends AbstractBlobProvider {
     public static final String ID = "perforce";
 
-    private static final String P4HOST = "P4HOST";
+    private static final String HOST = "host";
+
+    private static final String PROTOCOL = "protocol";
 
     private static final Log log = LogFactory.getLog(PerforceBlobProvider.class);
 
@@ -70,8 +76,9 @@ public class PerforceBlobProvider extends AbstractBlobProvider {
     public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
         super.initialize(blobProviderId, properties);
 
-        String host = Framework.getProperty(P4HOST, "localhost:1666");
-        this.properties.putIfAbsent(P4HOST, host);
+        String host = Framework.getProperty(String.format("%s.%s", P4JAVA_PROP_KEY_PREFIX, HOST), "localhost:1666");
+        this.properties.putIfAbsent(HOST, host);
+        this.properties.putIfAbsent(PROTOCOL, P4JAVA.toString());
 
         opts = new GetFileContentsOptions(false, true);
 
@@ -85,7 +92,23 @@ public class PerforceBlobProvider extends AbstractBlobProvider {
 
         if (server == null || !server.isConnected()) {
             try {
-                server = ServerFactory.getServer("p4java://" + this.properties.get(P4HOST), null);
+                String serverURI = String.format("%s://%s", Protocol.fromString(this.properties.get(PROTOCOL)),
+                        this.properties.get(HOST));
+
+                Map<Object, Object> p4props = Framework.getProperties()
+                                                       .entrySet()
+                                                       .stream()
+                                                       .filter(e -> e.getKey()
+                                                                     .toString()
+                                                                     .startsWith(P4JAVA_PROP_KEY_PREFIX))
+                                                       .collect(Collectors.toMap(Map.Entry::getKey,
+                                                               Map.Entry::getValue));
+
+                Properties props = new Properties();
+                props.putAll(p4props);
+
+                server = ServerFactory.getOptionsServer(serverURI, props);
+
                 server.connect();
             } catch (ConnectionException | AccessException | RequestException | ConfigException | ResourceException
                     | URISyntaxException | NoSuchObjectException e) {
