@@ -143,8 +143,10 @@ public class PerforceBlobProvider extends AbstractBlobProvider {
     }
 
     public List<String> listAllDepotFilesPath() throws ConnectionException, AccessException {
-        return server.getDepotFiles(makeFileSpecList("//..."), false)
+        List<IFileSpec> list = makeFileSpecList("//...");
+        return server.getDepotFiles(list, false)
                      .stream()
+                     .filter(s -> !s.getAction().toString().endsWith("delete"))
                      .map(IFileSpec::getDepotPathString)
                      .collect(Collectors.toList());
     }

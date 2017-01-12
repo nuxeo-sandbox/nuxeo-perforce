@@ -22,7 +22,6 @@
 package com.nuxeo.perforce;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,6 +30,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
@@ -100,8 +100,11 @@ public class TestPerforceBlobProvider {
     @Test
     public void testListAllFiles() throws ConnectionException, AccessException {
         List<IFileSpec> iFileSpecs = FileSpecBuilder.makeFileSpecList("//...");
+        IFileSpec file = iFileSpecs.get(0);
         List<IFileSpec> depotFiles = server.getDepotFiles(iFileSpecs, false);
-        assertTrue(depotFiles.size() > 1);
+        List<IFileSpec> delete = depotFiles.stream().filter(s -> !s.getAction().toString().endsWith("delete")).collect(
+                Collectors.toList());
+        assertEquals(5, delete.size());
     }
 
     protected File createFile(InputStream is) throws IOException {

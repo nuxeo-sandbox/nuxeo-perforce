@@ -21,6 +21,10 @@
 
 package com.nuxeo.perforce.importer;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -28,6 +32,7 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 
 import com.nuxeo.perforce.VCSEventsPerforce;
@@ -45,6 +50,8 @@ public class PerforceInitializer {
 
     public static final String ID = "Perforce.Initializer";
 
+    private static final int BATCH = 20;
+
     @Context
     protected CoreSession session;
 
@@ -58,8 +65,17 @@ public class PerforceInitializer {
         VCSEventsProvider provider = service.getEventsProvider(VCSEventsPerforce.NAME);
 
         PerforceBlobProvider blobProvider = (PerforceBlobProvider) provider.getBlobProvider();
-        blobProvider.listAllDepotFilesPath().stream().filter(provider::handleFilename).forEach(s -> {
-            // Schedule worker
-        });
+        List<String> files = blobProvider.listAllDepotFilesPath()
+                                         .stream()
+                                         .filter(provider::handleFilename)
+                                         .collect(Collectors.toList());
+        IntStream.range(0, (files.size() + BATCH - 1) / BATCH)
+                 .mapToObj(i -> files.subList(i * BATCH, Math.min(files.size(), (i + 1) * BATCH)))
+                 .forEach(f -> {
+                     VCSInitializerWorker work = new VCSInitializerWorker(provider.getName());
+                     work.addRemoteFile(f);
+
+                     Framework.getService(WorkManager.class).schedule(work, true);
+                 });
     }
 }

@@ -76,7 +76,9 @@ public class VCSEventsServiceImpl extends DefaultComponent implements VCSEventsS
             provider.extractMetadata(filePath).entrySet().forEach(e -> doc.setProperties(e.getKey(), e.getValue()));
 
             doc.setPropertyValue(KEY_PROP, provider.computeKey(filePath, change));
+            doc.setPropertyValue("dc:title", filename);
             doc.setPropertyValue("file:content", getBlob(provider, filePath, change));
+            doc.setPropertyValue("dc:description", filePath);
             return session.createDocument(doc);
         } catch (IOException e) {
             throw new NuxeoException(e);
@@ -92,6 +94,7 @@ public class VCSEventsServiceImpl extends DefaultComponent implements VCSEventsS
                 return createDocumentModel(provider, session, filePath, change);
             } else {
                 doc.setPropertyValue("file:content", getBlob(provider, filePath, change));
+                doc.setPropertyValue("dc:description", filePath);
                 return session.saveDocument(doc);
             }
         } catch (IOException e) {
