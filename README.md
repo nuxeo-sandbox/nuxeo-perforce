@@ -12,6 +12,14 @@ $NUXEO/bin/nuxeoctl mp-install nuxeo-perforce-package/target/nuxeo-perforce-pack
 
 Download a Helix server: https://www.perforce.com/downloads/helix#server
 
+## Initialize Nuxeo with existing assets
+
+A Node script has been write to ease the initialize; it just starts an Operation that ask all files from Perforce
+
+```
+./perforce-triggers/initialize.js
+```
+
 ## Install Perforce Triggers
 
 ### Prepare triggers
