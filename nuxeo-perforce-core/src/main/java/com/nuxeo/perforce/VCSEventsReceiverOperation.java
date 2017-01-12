@@ -33,7 +33,6 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.AbstractBlob;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -82,9 +81,7 @@ public class VCSEventsReceiverOperation {
 
         switch (provider.getAction(this.action)) {
         case CREATE:
-            doc = createDocumentModel(provider);
-            doc.setPropertyValue("file:content", getBlob(provider));
-            session.saveDocument(doc);
+            doc = service.createDocumentModel(provider, session, filePath, change);
             break;
         case DELETE:
             doc = service.searchDocumentModel(session, documentKey);
@@ -96,12 +93,7 @@ public class VCSEventsReceiverOperation {
             }
             break;
         case UPDATE:
-            doc = service.searchDocumentModel(session, documentKey);
-            if (doc == null) {
-                doc = createDocumentModel(provider);
-            }
-            doc.setPropertyValue("file:content", getBlob(provider));
-            session.saveDocument(doc);
+            doc = service.updateDocumentModel(provider, session, filePath, change);
             break;
         case MOVE:
             // XXX Considering move like a DELETE + CREATE for now.
@@ -114,18 +106,7 @@ public class VCSEventsReceiverOperation {
         return doc;
     }
 
-    private AbstractBlob getBlob(VCSEventsProvider provider) throws IOException {
-        return (AbstractBlob) provider.getBlobProvider().readBlob(provider.buildBlobInfo(filePath, filename, change));
-    }
-
     private static VCSEventsService getService() {
         return Framework.getService(VCSEventsService.class);
-    }
-
-    private DocumentModel createDocumentModel(VCSEventsProvider provider) {
-        DocumentModel doc = getService().createDocumentModel(session, filename, provider.getDocumentType(),
-                provider.computeKey(filePath, change));
-        provider.extractMetadata(filePath).entrySet().forEach(e -> doc.setProperties(e.getKey(), e.getValue()));
-        return session.createDocument(doc);
     }
 }

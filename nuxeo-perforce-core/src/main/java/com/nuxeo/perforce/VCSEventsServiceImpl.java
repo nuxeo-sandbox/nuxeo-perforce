@@ -20,6 +20,7 @@
  */
 package com.nuxeo.perforce;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,9 +29,12 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.impl.blob.AbstractBlob;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -42,6 +46,7 @@ public class VCSEventsServiceImpl extends DefaultComponent implements VCSEventsS
 
     private static final String KEY_PROP = "dc:source";
 
+    // Create a PageProvider
     private static final String QUERY = "Select * from Document where " + KEY_PROP
             + " = '%s' AND ecm:isProxy = 0 AND ecm:isCheckedInVersion = 0";
 
@@ -63,10 +68,35 @@ public class VCSEventsServiceImpl extends DefaultComponent implements VCSEventsS
     }
 
     @Override
-    public DocumentModel createDocumentModel(CoreSession session, String filename, String type, String remoteKey) {
-        DocumentModel doc = session.createDocumentModel(getRootPath(), filename, type);
-        doc.setPropertyValue(KEY_PROP, remoteKey);
-        return doc;
+    public DocumentModel createDocumentModel(VCSEventsProvider provider, CoreSession session, String filePath,
+            String change) {
+        try {
+            String filename = FileUtils.getFileName(filePath);
+            DocumentModel doc = session.createDocumentModel(getRootPath(), filename, provider.getDocumentType());
+            provider.extractMetadata(filePath).entrySet().forEach(e -> doc.setProperties(e.getKey(), e.getValue()));
+
+            doc.setPropertyValue(KEY_PROP, provider.computeKey(filePath, change));
+            doc.setPropertyValue("file:content", getBlob(provider, filePath, change));
+            return session.createDocument(doc);
+        } catch (IOException e) {
+            throw new NuxeoException(e);
+        }
+    }
+
+    @Override
+    public DocumentModel updateDocumentModel(VCSEventsProvider provider, CoreSession session, String filePath,
+            String change) {
+        try {
+            DocumentModel doc = searchDocumentModel(session, provider.computeKey(filePath, change));
+            if (doc == null) {
+                return createDocumentModel(provider, session, filePath, change);
+            } else {
+                doc.setPropertyValue("file:content", getBlob(provider, filePath, change));
+                return session.saveDocument(doc);
+            }
+        } catch (IOException e) {
+            throw new NuxeoException(e);
+        }
     }
 
     @Override
@@ -87,5 +117,10 @@ public class VCSEventsServiceImpl extends DefaultComponent implements VCSEventsS
 
     protected void register(VCSEventsProvider transformer) {
         providers.put(transformer.getName(), transformer);
+    }
+
+    public AbstractBlob getBlob(VCSEventsProvider provider, String filePath, String change) throws IOException {
+        String filename = FileUtils.getFileName(filePath);
+        return (AbstractBlob) provider.getBlobProvider().readBlob(provider.buildBlobInfo(filePath, filename, change));
     }
 }

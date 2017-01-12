@@ -3,6 +3,7 @@
 
   <extension point="operations" target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
     <operation class="com.nuxeo.perforce.VCSEventsReceiverOperation"/>
+    <operation class="com.nuxeo.perforce.importer.PerforceInitializer"/>
   </extension>
 
 </component>

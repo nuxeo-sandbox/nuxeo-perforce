@@ -21,11 +21,14 @@
 
 package com.nuxeo.perforce.blob;
 
+import static com.perforce.p4java.core.file.FileSpecBuilder.makeFileSpecList;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,7 +41,6 @@ import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.runtime.api.Framework;
 
 import com.google.common.base.Splitter;
-import com.perforce.p4java.core.file.FileSpecBuilder;
 import com.perforce.p4java.core.file.IFileSpec;
 import com.perforce.p4java.exception.AccessException;
 import com.perforce.p4java.exception.ConfigException;
@@ -125,7 +127,7 @@ public class PerforceBlobProvider extends AbstractBlobProvider {
     }
 
     protected List<IFileSpec> getFiles(ManagedBlob blob) {
-        return FileSpecBuilder.makeFileSpecList(toPath(blob));
+        return makeFileSpecList(toPath(blob));
     }
 
     protected String toPath(ManagedBlob blob) {
@@ -138,6 +140,13 @@ public class PerforceBlobProvider extends AbstractBlobProvider {
     @Override
     public String writeBlob(Blob blob, Document document) throws IOException {
         throw new UnsupportedOperationException("Unable to update Perforce assets.");
+    }
+
+    public List<String> listAllDepotFilesPath() throws ConnectionException, AccessException {
+        return server.getDepotFiles(makeFileSpecList("//..."), false)
+                     .stream()
+                     .map(IFileSpec::getDepotPathString)
+                     .collect(Collectors.toList());
     }
 
     @Override

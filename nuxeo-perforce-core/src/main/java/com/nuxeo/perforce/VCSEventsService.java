@@ -20,15 +20,22 @@
  */
 package com.nuxeo.perforce;
 
+import java.io.IOException;
+
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.blob.AbstractBlob;
 
 public interface VCSEventsService {
     VCSEventsProvider getEventsProvider(String name);
 
     String getRootPath();
 
-    DocumentModel createDocumentModel(CoreSession session, String filename, String type, String remoteKey);
+    AbstractBlob getBlob(VCSEventsProvider provider, String filePath, String change) throws IOException;
+
+    DocumentModel createDocumentModel(VCSEventsProvider provider, CoreSession session, String filePath, String change);
+
+    DocumentModel updateDocumentModel(VCSEventsProvider provider, CoreSession session, String filePath, String change);
 
     DocumentModel searchDocumentModel(CoreSession session, String key);
 }

@@ -22,6 +22,7 @@
 package com.nuxeo.perforce;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -94,6 +95,13 @@ public class TestPerforceBlobProvider {
             File file = createFile(is);
             System.out.println(file.getAbsolutePath());
         }
+    }
+
+    @Test
+    public void testListAllFiles() throws ConnectionException, AccessException {
+        List<IFileSpec> iFileSpecs = FileSpecBuilder.makeFileSpecList("//...");
+        List<IFileSpec> depotFiles = server.getDepotFiles(iFileSpecs, false);
+        assertTrue(depotFiles.size() > 1);
     }
 
     protected File createFile(InputStream is) throws IOException {

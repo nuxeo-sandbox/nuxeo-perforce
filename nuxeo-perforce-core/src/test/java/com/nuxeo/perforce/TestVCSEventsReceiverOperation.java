@@ -84,7 +84,7 @@ public class TestVCSEventsReceiverOperation {
         final String[] path = new String[1];
 
         TransactionHelper.runInTransaction(() -> {
-            DocumentModel doc = vcsService.createDocumentModel(session, fileName, "File", remoteKey);
+            DocumentModel doc = vcsService.createDocumentModel(perforce, session, fileName, remoteKey);
             doc = session.createDocument(doc);
             session.save();
 
