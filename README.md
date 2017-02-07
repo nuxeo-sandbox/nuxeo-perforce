@@ -57,6 +57,8 @@ export NUXEO_PWD="Administrator";
 * Go to the end of the file
 * Insert the following line, making sure to replace <PATH> with the path to `change-commit.js`:
 
+(IMPORTANT: a leading tab character is *required*)
+
 ```
 nuxeo change-commit //... "<PATH>/change-commit.js %changelist% %serverport%"
 ```
