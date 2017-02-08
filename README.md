@@ -45,7 +45,7 @@ cd perforce-triggers && npm install
 
 Then, you must also set some environment variables / or edit the `change-commit.js` script:
 ```
-export P4CLIENT="/usr/local/bin/p4";
+export P4CLIENT="<your workspace name>";
 export NUXEO_HOST="http://localhost:8080/nuxeo";
 export NUXEO_USER="Administrator";
 export NUXEO_PWD="Administrator";
