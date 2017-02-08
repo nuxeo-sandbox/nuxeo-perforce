@@ -8,7 +8,7 @@ const s = require('synchronize');
 const os = require('os');
 const exec = require('child_process').execSync;
 
-const P4CLIENT = process.env.P4CLIENT || '/Users/arnaud/Nuxeo/tmp/perforce/p4';
+const P4CLIENT = process.env.P4CLIENT || '/usr/local/bin/p4';
 const NUXEO_HOST = process.env.NUXEO_HOST || 'http://localhost:8080/nuxeo';
 const NUXEO_USER = process.env.NUXEO_USER || 'Administrator';
 const NUXEO_PWD = process.env.NUXEO_PWD || 'Administrator';
