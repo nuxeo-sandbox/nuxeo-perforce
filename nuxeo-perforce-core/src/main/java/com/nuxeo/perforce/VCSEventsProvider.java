@@ -67,15 +67,6 @@ public interface VCSEventsProvider {
     }
 
     /**
-     * Return the Document's Type that must be created
-     * 
-     * @return a registered Document Type
-     */
-    default String getDocumentType() {
-        return "File";
-    }
-
-    /**
      * Build a BlobInfo that will be used to instanciate a new {@link org.nuxeo.ecm.core.blob.ManagedBlob}. So, the key
      * must be in format `providerID:key`
      */

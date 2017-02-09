@@ -32,7 +32,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(AutomationFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy("com.nuxeo.perforce.nuxeo-perforce-core")
+@Deploy({ "com.nuxeo.perforce.nuxeo-perforce-core", "org.nuxeo.ecm.platform.types.core",
+        "org.nuxeo.ecm.platform.filemanager.core" })
 public class TestVCSEventsReceiverOperation {
 
     @Inject

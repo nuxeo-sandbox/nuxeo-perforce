@@ -35,6 +35,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.blob.AbstractBlob;
+import org.nuxeo.ecm.platform.filemanager.api.FileManager;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -70,16 +72,17 @@ public class VCSEventsServiceImpl extends DefaultComponent implements VCSEventsS
     @Override
     public DocumentModel createDocumentModel(VCSEventsProvider provider, CoreSession session, String filePath,
             String change) {
-        try {
-            String filename = FileUtils.getFileName(filePath);
-            DocumentModel doc = session.createDocumentModel(getRootPath(), filename, provider.getDocumentType());
-            provider.extractMetadata(filePath).entrySet().forEach(e -> doc.setProperties(e.getKey(), e.getValue()));
+        String filename = FileUtils.getFileName(filePath);
 
+        try {
+            DocumentModel doc = fileManager().createDocumentFromBlob(session, getBlob(provider, filePath, change),
+                    getRootPath(), false, filename);
+
+            provider.extractMetadata(filePath).entrySet().forEach(e -> doc.setProperties(e.getKey(), e.getValue()));
             doc.setPropertyValue(KEY_PROP, provider.computeKey(filePath, change));
-            doc.setPropertyValue("dc:title", filename);
-            doc.setPropertyValue("file:content", getBlob(provider, filePath, change));
             doc.setPropertyValue("dc:description", filePath);
-            return session.createDocument(doc);
+
+            return session.saveDocument(doc);
         } catch (IOException e) {
             throw new NuxeoException(e);
         }
@@ -116,6 +119,10 @@ public class VCSEventsServiceImpl extends DefaultComponent implements VCSEventsS
         }
 
         return res.get(0);
+    }
+
+    protected FileManager fileManager() {
+        return Framework.getService(FileManager.class);
     }
 
     protected void register(VCSEventsProvider transformer) {
