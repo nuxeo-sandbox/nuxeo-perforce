@@ -1,11 +1,24 @@
 # About
 Browse and Sync Perforce assets from a remote depot
 
-# Build & Install Java Plugin
+# Build & Install Nuxeo Package
 
 ```
 mvn install
 $NUXEO/bin/nuxeoctl mp-install nuxeo-perforce-package/target/nuxeo-perforce-package-1.0-SNAPSHOT.zip
+```
+
+# Configure Plugin
+
+By default documents are created at `/default-domain/workspaces` and only files whose MIME-type starts with `audio`, `video`, and `image` are imported. You may change these settings via the ConfigurationService:
+
+```
+<component name="com.nuxeo.perforce.configuration" version="1.0">
+  <extension point="configuration" target="org.nuxeo.runtime.ConfigurationService">
+    <property name="com.nuxeo.perforce.fileTypes">audio,video,image</property>
+    <property name="com.nuxeo.perforce.contentRoot">/default-domain/workspaces</property>
+  </extension>
+</component>
 ```
 
 # Prepare Perforce env
