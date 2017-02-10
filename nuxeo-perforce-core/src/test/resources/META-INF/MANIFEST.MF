@@ -1,0 +1,9 @@
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Vendor: com.nuxeo.perforce
+Bundle-Version: 1.0.0
+Bundle-Name: nuxeo-perforce-core-test
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: com.nuxeo.perforce.nuxeo-perforce-core-test
+Nuxeo-Component: OSGI-INF/test-configuration-service-contrib.xml
