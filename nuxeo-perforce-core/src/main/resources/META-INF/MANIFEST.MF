@@ -8,4 +8,5 @@ Bundle-ManifestVersion: 2
 Bundle-SymbolicName: com.nuxeo.perforce.nuxeo-perforce-core;singleton=true
 Nuxeo-Component: OSGI-INF/operation-contrib.xml,
  OSGI-INF/service-contrib.xml,
- OSGI-INF/blobprovider-contrib.xml
+ OSGI-INF/blobprovider-contrib.xml,
+ OSGI-INF/configuration-contrib.xml

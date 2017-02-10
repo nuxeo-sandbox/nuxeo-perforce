@@ -10,19 +10,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Inject;
 import com.nuxeo.perforce.VCSEventsProvider.EVENT_ACTION;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features({ PlatformFeature.class })
-@Deploy({ "com.nuxeo.perforce.nuxeo-perforce-core", "org.nuxeo.ecm.core.mimetype", "com.nuxeo.perforce.nuxeo-perforce-core-test:OSGI-INF/test-configuration-service-contrib.xml" })
+@Deploy({ "com.nuxeo.perforce.nuxeo-perforce-core", "org.nuxeo.ecm.core.mimetype" })
 public class TestVCSEventsService {
 
     @Inject

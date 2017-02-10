@@ -33,18 +33,23 @@ import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.platform.mimetype.MimetypeNotFoundException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
-
-import com.nuxeo.perforce.blob.PerforceBlobProvider;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 
-public class VCSEventsPerforce implements VCSEventsProvider {
+import com.nuxeo.perforce.blob.PerforceBlobProvider;
 
-    private static final Log log = LogFactory.getLog(VCSEventsPerforce.class);
+public class VCSEventsPerforce implements VCSEventsProvider {
 
     public static final String NAME = "perforce";
 
     protected final static String FILE_TYPES_DEFAULT = null; // This means handle ALL content types.
+
     protected static final String FILE_TYPES_KEY = "com.nuxeo.perforce.fileTypes";
+
+    private static final Log log = LogFactory.getLog(VCSEventsPerforce.class);
+
+    private static boolean anyStartsWith(String mimeType, String[] medias) {
+        return Arrays.stream(medias).anyMatch(mimeType::startsWith);
+    }
 
     @Override
     public String getName() {
@@ -54,12 +59,12 @@ public class VCSEventsPerforce implements VCSEventsProvider {
     @Override
     public EVENT_ACTION getAction(String action) {
         switch (action) {
-            case "edit":
-                return EVENT_ACTION.UPDATE;
-            case "delete":
-                return EVENT_ACTION.DELETE;
-            case "add":
-                return EVENT_ACTION.CREATE;
+        case "edit":
+            return EVENT_ACTION.UPDATE;
+        case "delete":
+            return EVENT_ACTION.DELETE;
+        case "add":
+            return EVENT_ACTION.CREATE;
         }
 
         throw new UnsupportedOperationException("Unknown action: " + action);
@@ -106,9 +111,5 @@ public class VCSEventsPerforce implements VCSEventsProvider {
             log.debug("Unable to find MimeType for filename: " + filename);
             return null;
         }
-    }
-
-    private static boolean anyStartsWith(String mimeType, String[] medias) {
-        return Arrays.stream(medias).anyMatch(mimeType::startsWith);
     }
 }

@@ -1,3 +1,0 @@
-<extension point="configuration" target="org.nuxeo.runtime.ConfigurationService">
-  <property name="com.nuxeo.perforce.fileTypes">audio,video,image</property>
-</extension>

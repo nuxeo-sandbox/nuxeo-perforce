@@ -41,9 +41,9 @@ import org.nuxeo.runtime.api.Framework;
 @Operation(id = VCSEventsReceiverOperation.ID, category = Constants.CAT_DOCUMENT, label = "VCSEventsReceiver", description = "Describe here what your operation does.")
 public class VCSEventsReceiverOperation {
 
-    private static final Log log = LogFactory.getLog(VCSEventsReceiverOperation.class);
-
     public static final String ID = "Document.VCSEventsReceiverOperation";
+
+    private static final Log log = LogFactory.getLog(VCSEventsReceiverOperation.class);
 
     @Context
     protected CoreSession session;
@@ -61,6 +61,10 @@ public class VCSEventsReceiverOperation {
     protected String change;
 
     protected String filename;
+
+    private static VCSEventsService getService() {
+        return Framework.getService(VCSEventsService.class);
+    }
 
     @OperationMethod
     public DocumentModel run() throws IOException {
@@ -104,9 +108,5 @@ public class VCSEventsReceiverOperation {
         }
 
         return doc;
-    }
-
-    private static VCSEventsService getService() {
-        return Framework.getService(VCSEventsService.class);
     }
 }

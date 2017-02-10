@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<component name="com.nuxeo.perforce.configuration" version="1.0">
+  <extension point="configuration" target="org.nuxeo.runtime.ConfigurationService">
+    <property name="com.nuxeo.perforce.fileTypes">audio,video,image</property>
+  </extension>
+</component>

@@ -33,7 +33,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Features(AutomationFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "com.nuxeo.perforce.nuxeo-perforce-core", "org.nuxeo.ecm.platform.types.core",
-        "org.nuxeo.ecm.platform.filemanager.core", "com.nuxeo.perforce.nuxeo-perforce-core-test:OSGI-INF/test-configuration-service-contrib.xml" })
+        "org.nuxeo.ecm.platform.filemanager.core" })
 public class TestVCSEventsReceiverOperation {
 
     @Inject
