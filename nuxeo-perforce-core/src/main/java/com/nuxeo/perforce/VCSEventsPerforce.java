@@ -35,12 +35,16 @@ import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
 
 import com.nuxeo.perforce.blob.PerforceBlobProvider;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 public class VCSEventsPerforce implements VCSEventsProvider {
 
     private static final Log log = LogFactory.getLog(VCSEventsPerforce.class);
 
     public static final String NAME = "perforce";
+
+    protected final static String FILE_TYPES_DEFAULT = null; // This means handle ALL content types.
+    protected static final String FILE_TYPES_KEY = "com.nuxeo.perforce.fileTypes";
 
     @Override
     public String getName() {
@@ -82,8 +86,17 @@ public class VCSEventsPerforce implements VCSEventsProvider {
 
     @Override
     public boolean handleFilename(String filename) {
-        String mimeType = getMimeTypeFromFilename(filename);
-        return mimeType != null && anyStartsWith(mimeType, "audio", "video", "image");
+        // Get the list of supported file types.
+        ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
+        String fileTypes = configurationService.getProperty(FILE_TYPES_KEY, FILE_TYPES_DEFAULT);
+
+        if (fileTypes != null) {
+            String[] fileTypesArray = fileTypes.split(",");
+            String mimeType = getMimeTypeFromFilename(filename);
+            return mimeType != null && anyStartsWith(mimeType, fileTypesArray);
+        } else {
+            return true;
+        }
     }
 
     private String getMimeTypeFromFilename(String filename) {
@@ -95,7 +108,7 @@ public class VCSEventsPerforce implements VCSEventsProvider {
         }
     }
 
-    private static boolean anyStartsWith(String mimeType, String... medias) {
+    private static boolean anyStartsWith(String mimeType, String[] medias) {
         return Arrays.stream(medias).anyMatch(mimeType::startsWith);
     }
 }
