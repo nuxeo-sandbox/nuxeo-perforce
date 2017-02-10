@@ -20,12 +20,6 @@
  */
 package com.nuxeo.perforce;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,12 +33,28 @@ import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.services.config.ConfigurationService;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class VCSEventsServiceImpl extends DefaultComponent implements VCSEventsService {
 
     private static final Log log = LogFactory.getLog(VCSEventsServiceImpl.class);
 
     Map<String, VCSEventsProvider> providers = new HashMap<>();
+
+    /**
+     * @TODO: you can't actually create Pictures or Videos in a WorkspaceRoot by default.
+     * Maybe we should create them "unfiled"?
+     */
+    protected static final String CONTENT_ROOT_DEFAULT = "/default-domain/workspaces";
+    protected static final String CONTENT_ROOT_KEY = "com.nuxeo.perforce.contentRoot";
+
+    private String contentRoot = CONTENT_ROOT_DEFAULT;
 
     private static final String KEY_PROP = "dc:source";
 
@@ -66,12 +76,15 @@ public class VCSEventsServiceImpl extends DefaultComponent implements VCSEventsS
 
     @Override
     public String getRootPath() {
-        return "/default-domain/workspaces";
+        // Get the root configured for the content from Perforce.
+        ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
+        contentRoot = configurationService.getProperty(CONTENT_ROOT_KEY, CONTENT_ROOT_DEFAULT);
+        return contentRoot;
     }
 
     @Override
     public DocumentModel createDocumentModel(VCSEventsProvider provider, CoreSession session, String filePath,
-            String change) {
+                                             String change) {
         String filename = FileUtils.getFileName(filePath);
 
         try {
@@ -90,7 +103,7 @@ public class VCSEventsServiceImpl extends DefaultComponent implements VCSEventsS
 
     @Override
     public DocumentModel updateDocumentModel(VCSEventsProvider provider, CoreSession session, String filePath,
-            String change) {
+                                             String change) {
         try {
             DocumentModel doc = searchDocumentModel(session, provider.computeKey(filePath, change));
             if (doc == null) {
