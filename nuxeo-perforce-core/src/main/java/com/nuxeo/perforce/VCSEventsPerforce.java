@@ -54,12 +54,12 @@ public class VCSEventsPerforce implements VCSEventsProvider {
     @Override
     public EVENT_ACTION getAction(String action) {
         switch (action) {
-        case "edit":
-            return EVENT_ACTION.UPDATE;
-        case "delete":
-            return EVENT_ACTION.DELETE;
-        case "add":
-            return EVENT_ACTION.CREATE;
+            case "edit":
+                return EVENT_ACTION.UPDATE;
+            case "delete":
+                return EVENT_ACTION.DELETE;
+            case "add":
+                return EVENT_ACTION.CREATE;
         }
 
         throw new UnsupportedOperationException("Unknown action: " + action);
