@@ -25,7 +25,7 @@ By default documents are created at `/default-domain/workspaces` and only files 
 
 * Download a Helix server: https://www.perforce.com/downloads/helix#server
 * Extract the download
-* Copy the `p4*` executables to `/usr/local/bin`
+* On Unix Systems Copy the `p4*` executables to `/usr/local/bin`
 * You may follow the tutorial [here](https://www.perforce.com/perforce/doc.current/manuals/p4guide/chapter.tutorial.html) to create a server, streams, and workspace
   * This is *required* before the connector will work
 
@@ -38,13 +38,13 @@ A Node script is provided to ease the initialization; it just starts an Operatio
 Note that the `nuxeo` client must be installed:
 
 ```
-npm install nuxeo
+cd perforce-triggers && npm install
 ```
 
 Run the script
 
 ```
-./perforce-triggers/initialize.js
+node initialize.js
 ```
 
 # Install Perforce Triggers
@@ -58,7 +58,7 @@ cd perforce-triggers && npm install
 
 Then, you must also set some environment variables / or edit the `change-commit.js` script:
 ```
-export P4CLIENT="<your workspace name>";
+export P4CLIENT="<PATH TO p4 EXECUTABLE>";
 export NUXEO_HOST="http://localhost:8080/nuxeo";
 export NUXEO_USER="Administrator";
 export NUXEO_PWD="Administrator";
@@ -73,7 +73,7 @@ export NUXEO_PWD="Administrator";
 (IMPORTANT: a leading tab character is *required*)
 
 ```
-nuxeo change-commit //... "<PATH>/change-commit.js %changelist% %serverport%"
+nuxeo change-commit //... "node <PATH>/change-commit.js %changelist% %serverport%"
 ```
 # Licensing
 
