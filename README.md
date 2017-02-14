@@ -8,6 +8,16 @@ mvn install
 $NUXEO/bin/nuxeoctl mp-install nuxeo-perforce-package/target/nuxeo-perforce-package-1.0-SNAPSHOT.zip
 ```
 
+# Configure The Nuxeo Server
+
+Configure the perforce server info using properties in the nuxeo.conf file. 
+
+```
+com.perforce.p4java.host=
+com.perforce.p4java.userName=
+com.perforce.p4java.password=
+```
+
 # Configure Plugin
 
 By default documents are created at `/default-domain/workspaces` and only files whose MIME-type starts with `audio`, `video`, and `image` are imported. You may change these settings via the ConfigurationService:
