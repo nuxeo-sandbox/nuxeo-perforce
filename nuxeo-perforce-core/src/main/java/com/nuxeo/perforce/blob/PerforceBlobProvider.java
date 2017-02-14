@@ -21,18 +21,13 @@
 
 package com.nuxeo.perforce.blob;
 
-import static com.perforce.p4java.PropertyDefs.P4JAVA_PROP_KEY_PREFIX;
-import static com.perforce.p4java.core.file.FileSpecBuilder.makeFileSpecList;
-import static com.perforce.p4java.server.IServerAddress.Protocol.P4JAVA;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.stream.Collectors;
-
+import com.google.common.base.Splitter;
+import com.perforce.p4java.core.file.IFileSpec;
+import com.perforce.p4java.exception.*;
+import com.perforce.p4java.option.server.GetFileContentsOptions;
+import com.perforce.p4java.server.IServer;
+import com.perforce.p4java.server.IServerAddress.Protocol;
+import com.perforce.p4java.server.ServerFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -43,19 +38,17 @@ import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.runtime.api.Framework;
 
-import com.google.common.base.Splitter;
-import com.perforce.p4java.core.file.IFileSpec;
-import com.perforce.p4java.exception.AccessException;
-import com.perforce.p4java.exception.ConfigException;
-import com.perforce.p4java.exception.ConnectionException;
-import com.perforce.p4java.exception.NoSuchObjectException;
-import com.perforce.p4java.exception.P4JavaException;
-import com.perforce.p4java.exception.RequestException;
-import com.perforce.p4java.exception.ResourceException;
-import com.perforce.p4java.option.server.GetFileContentsOptions;
-import com.perforce.p4java.server.IServer;
-import com.perforce.p4java.server.IServerAddress.Protocol;
-import com.perforce.p4java.server.ServerFactory;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.stream.Collectors;
+
+import static com.perforce.p4java.PropertyDefs.P4JAVA_PROP_KEY_PREFIX;
+import static com.perforce.p4java.core.file.FileSpecBuilder.makeFileSpecList;
+import static com.perforce.p4java.server.IServerAddress.Protocol.P4JAVA;
 
 public class PerforceBlobProvider extends AbstractBlobProvider {
     public static final String ID = "perforce";
@@ -76,7 +69,7 @@ public class PerforceBlobProvider extends AbstractBlobProvider {
     public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
         super.initialize(blobProviderId, properties);
 
-        String host = Framework.getProperty(String.format("%s.%s", P4JAVA_PROP_KEY_PREFIX, HOST), "localhost:1666");
+        String host = Framework.getProperty(String.format("%s%s", P4JAVA_PROP_KEY_PREFIX, HOST), "localhost:1666");
         this.properties.putIfAbsent(HOST, host);
         this.properties.putIfAbsent(PROTOCOL, P4JAVA.toString());
 
